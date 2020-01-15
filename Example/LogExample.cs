@@ -1,18 +1,17 @@
-﻿#if !UNIT_TEST
+﻿#if UNIT_TEST
 //开启Log.Info,只有定义了该宏定义Log.info才会输出到Console平台
 //可以添加到File -> Build Settings -> Player Setting -> Other Settings -> Scripting Define Symbols中,开启全局Log.Info
 //该定义如果放在某个脚本中，只能控制该脚本中的Log.Info的显示和隐藏
 #define LOG_INFO
 
-//开启Log.Info,只有定义了该宏定义Log.Warning才会输出到Console平台
+//开启Log.Warning,只有定义了该宏定义Log.Warning才会输出到Console平台
 //可以添加到File -> Build Settings -> Player Setting -> Other Settings -> Scripting Define Symbols中,开启全局Log.Warning
 //该定义如果放在某个脚本中，只能控制该脚本中的Log.Warning的显示和隐藏
 #define LOG_WARNING
 
-//同时也可以使用Log.ShowTag = 0；来关闭所有的Log.Info和Log.Warning
-//使用Log.ShowTag = 0;需要确保Log.ShowTag在最早出设置并确保运行中不会被覆盖
-//建议在正式环境中使用宏定义来开关，使用宏定义可以减少函数调用以及Log.ShowTag & InTag == InTag的判断
-//同时Log.ShowTag可以在运行中控制是否打开Log，或者打开哪些log信息，只需要让Log.ShowTag等于某个远程可以更改的值
+//同时也可以使用Log.RemoveFlag(intValue);来过滤标志为 intValue 的 message 
+//同时也可以使用Log.AddFlag(intValue);来重新显示标志为 intValue 的 message
+//建议在正式环境中使用宏定义来开关
 
 //注：Log.Error和Log.Exception没有提供关闭方法，所以只要在需要抛出Error和Exception的时候再使用Log.Error和Log.Exception
 //否则，请使用Log.Info并设置醒目的ColorName来达到醒目的目的
@@ -33,17 +32,20 @@ public class LogExample : MonoBehaviour
         //Debug.Log("<color=green>Log.Info with Color</color>")
         Log.Info("Log.Info with Color", ColorName.Green);
 
-        //if(Log.ShowTag & Tag == Tag) show Log.Info
-        Log.ShowTag = 10;
-        //Debug.Log("<color=green>Log.Info with Color</color>")
-        Log.Info("Log.Info with Color And Tag", ColorName.Green, 10);
+        //Default show all msg
+        //Debug.Log("<color=green>You can set a flag to determine whether this message is displayed</color>")
+        Log.Info("You can set a flag to determine whether this msg is displayed", ColorName.Green, 10);
 
-        //else Hide Log.Info
-        Log.ShowTag = 0;
-        //Debug.Log("<color=green>Log.Info with Color</color>")
-        Log.Info("Log.Info with Color And Tag\ntest kkk", ColorName.Green, 10);
+        //You can remove some msg you do not care about by removing the flag 
+        Log.RemoveFlag(10);
+        //Will not be printed to the console
+        Log.Info("You can remove some msg you do not care about by removing the flag", ColorName.Green, 10);
+        
+        //You can reprint the filtered msg by adding the flag
+        Log.AddFlag(10);
+        //Debug.Log("<color=green>You can reprint the filtered msg by adding the flag</color>")
+        Log.Info("You can reprint the filtered msg by adding the flag", ColorName.Green, 10);
 
-        Log.ShowTag = 1;
         //Debug.LogWarning("Log.Warning")
         Log.Warning("Log.Warning");
 
